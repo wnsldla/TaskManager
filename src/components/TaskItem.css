@@ -1,15 +1,26 @@
 .task-item {
   position: relative;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
   overflow: hidden;
+}
+
+.task-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
 .task-item.completed {
   opacity: 0.7;
-}
-
-.task-item.overdue {
-  border-color: #ef4444;
-  background: rgba(239, 68, 68, 0.1);
+  border-color: #10b981;
+  border-width: 2px;
 }
 
 .task-header {
@@ -111,7 +122,7 @@
   letter-spacing: 0.5px;
 }
 
-.due-date {
+.deadline {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -122,9 +133,9 @@
   border-radius: 6px;
 }
 
-.due-date.overdue {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.2);
+.deadline.passed {
+  color: #dc2626;
+  background: rgba(220, 38, 38, 0.2);
 }
 
 .repeat-indicator {
@@ -213,7 +224,7 @@
   }
 
   .priority-badge,
-  .due-date,
+  .deadline,
   .repeat-indicator {
     font-size: 0.7rem;
     padding: 3px 6px;

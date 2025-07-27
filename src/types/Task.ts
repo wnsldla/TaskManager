@@ -7,7 +7,7 @@ export interface Task {
   description: string;
   priority: TaskPriority;
   status: TaskStatus;
-  dueDate?: string;
+  deadline?: string; // 마감일
   createdAt: string;
   completedAt?: string;
   repeatDays?: number[]; // 0=일요일, 1=월요일, ..., 6=토요일

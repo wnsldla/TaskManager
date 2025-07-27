@@ -1,0 +1,96 @@
+
+.calendar-popup {
+  position: absolute;
+  z-index: 1000;
+  background-color: rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(4px);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+.calendar-content {
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+  color: #fff;
+}
+
+.calendar-month-year {
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.calendar-nav-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #fff;
+  padding: 4px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.calendar-nav-btn:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.calendar-days-grid, .calendar-body .calendar-row {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day-label, .calendar-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.calendar-day-label.sunday, .calendar-cell.sunday {
+  color: #ff6b6b;
+}
+
+.calendar-day-label.saturday, .calendar-cell.saturday {
+  color: #6b9cff;
+}
+
+.calendar-cell {
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background-color 0.2s, color 0.2s;
+  color: #fff;
+  width: 36px;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+.calendar-cell:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.calendar-cell.disabled {
+  color: #666;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.calendar-cell.selected {
+  background-color: #8a2be2;
+  color: white;
+  font-weight: bold;
+}
+
+.calendar-cell .number {
+  pointer-events: none;
+}

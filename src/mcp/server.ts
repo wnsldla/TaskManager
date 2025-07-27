@@ -57,7 +57,7 @@ class TaskManagerServer {
                   enum: ['low', 'medium', 'high'],
                   description: '우선순위',
                 },
-                dueDate: {
+                deadline: {
                   type: 'string',
                   description: '마감일 (ISO 문자열)',
                 },
@@ -98,7 +98,7 @@ class TaskManagerServer {
                   enum: ['pending', 'completed'],
                   description: '태스크 상태',
                 },
-                dueDate: {
+                deadline: {
                   type: 'string',
                   description: '마감일 (ISO 문자열)',
                 },
@@ -188,7 +188,7 @@ class TaskManagerServer {
               description: (args.description as string) || '',
               priority: args.priority as 'low' | 'medium' | 'high',
               status: 'pending' as const,
-              dueDate: (args.dueDate as string) || undefined,
+              deadline: (args.deadline as string) || undefined,
               createdAt: new Date().toISOString(),
               completedAt: undefined,
               repeatDays: (args.repeatDays as number[]) || undefined,
@@ -211,7 +211,7 @@ class TaskManagerServer {
             if (args.description !== undefined) updates.description = args.description;
             if (args.priority !== undefined) updates.priority = args.priority;
             if (args.status !== undefined) updates.status = args.status;
-            if (args.dueDate !== undefined) updates.dueDate = args.dueDate;
+            if (args.deadline !== undefined) updates.deadline = args.deadline;
             if (args.repeatDays !== undefined) {
               updates.repeatDays = args.repeatDays;
             }
@@ -240,7 +240,7 @@ class TaskManagerServer {
           }
 
           case 'get_tasks_by_date': {
-            const tasks = await taskDB.getTasksByDate(args.date as string);
+            const tasks = await taskDB.getTasksByDate(new Date(args.date as string));
             return {
               content: [
                 {

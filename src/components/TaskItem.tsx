@@ -4,30 +4,22 @@ import {
   Circle, 
   Trash2, 
   Edit,
-  Calendar
+  Clock
 } from 'lucide-react';
-import { Task, TaskPriority } from '../types/Task';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
+import { Task, TaskPriority } from '../types/Task';
 import './TaskItem.css';
 
 interface TaskItemProps {
   task: Task;
-  onUpdate: (id: string, updates: Partial<Task>) => void;
+  onToggleComplete: (id: string) => void;
   onDelete: (id: string) => void;
   onEdit: (task: Task) => void;
 }
 
-const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate, onDelete, onEdit }) => {
+const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleComplete, onDelete, onEdit }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-
-  const toggleComplete = () => {
-    const updates: Partial<Task> = {
-      status: task.status === 'completed' ? 'pending' : 'completed',
-      completedAt: task.status === 'completed' ? undefined : new Date().toISOString()
-    };
-    onUpdate(task.id, updates);
-  };
 
   const getPriorityColor = (priority: TaskPriority) => {
     switch (priority) {
@@ -68,17 +60,17 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate, onDelete, onEdit })
     return `${selectedDays}마다 반복`;
   };
 
-  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status === 'pending';
+  const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date() && task.status === 'pending';
 
   return (
     <div 
-      className={`task-item card ${task.status === 'completed' ? 'completed' : ''} ${isOverdue ? 'overdue' : ''}`}
+      className={`task-item card ${task.status === 'completed' ? 'completed' : ''} ${isDeadlinePassed ? 'deadline-passed' : ''}`}
     >
       <div className="task-header">
         <div className="task-main">
           <button 
             className="complete-btn"
-            onClick={toggleComplete}
+            onClick={() => onToggleComplete(task.id)}
             aria-label={task.status === 'completed' ? '완료 취소' : '완료'}
           >
             {task.status === 'completed' ? (
@@ -110,14 +102,15 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate, onDelete, onEdit })
               {getPriorityText(task.priority)}
             </div>
             
-            {task.dueDate && (
-              <div className={`due-date ${isOverdue ? 'overdue' : ''}`}>
-                <Calendar size={16} />
+            {task.deadline && (
+              <div className={`deadline ${isDeadlinePassed ? 'passed' : ''}`}>
+                <Clock size={16} />
                 <span>
-                  {format(new Date(task.dueDate), 'MMM dd', { locale: ko })}
+                  {format(new Date(task.deadline), 'MMM dd', { locale: ko })}
                 </span>
               </div>
             )}
+
             {task.repeatDays && task.repeatDays.length > 0 && (
               <div className="repeat-indicator">
                 <span>{getRepeatText(task.repeatDays)}</span>
@@ -126,14 +119,14 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate, onDelete, onEdit })
           </div>
 
           <div className="action-buttons">
-            <button 
+            <button
               className="edit-btn"
               onClick={() => onEdit(task)}
               aria-label="수정"
             >
               <Edit size={18} />
             </button>
-            <button 
+            <button
               className="delete-btn"
               onClick={() => onDelete(task.id)}
               aria-label="삭제"
@@ -143,12 +136,14 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onUpdate, onDelete, onEdit })
           </div>
         </div>
       </div>
-
-      {isExpanded && task.description && (
+      
+      {isExpanded && (
         <div className="task-details">
-          <div className="task-description-full">
-            {task.description}
-          </div>
+          {task.description && (
+            <div className="task-description-full">
+              {task.description}
+            </div>
+          )}
           <div className="task-timestamps">
             <span>생성: {format(new Date(task.createdAt), 'yyyy년 MM월 dd일 HH:mm', { locale: ko })}</span>
             {task.completedAt && (

@@ -6,12 +6,12 @@ import './TaskList.css';
 
 interface TaskListProps {
   tasks: Task[];
-  onUpdateTask: (id: string, updates: Partial<Task>) => void;
+  onToggleComplete: (id: string) => void;
   onDeleteTask: (id: string) => void;
   onEditTask: (task: Task) => void;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, onUpdateTask, onDeleteTask, onEditTask }) => {
+const TaskList: React.FC<TaskListProps> = ({ tasks, onToggleComplete, onDeleteTask, onEditTask }) => {
   if (tasks.length === 0) {
     return (
       <div className="empty-state">
@@ -28,12 +28,12 @@ const TaskList: React.FC<TaskListProps> = ({ tasks, onUpdateTask, onDeleteTask, 
     <div className="task-list">
       {tasks.map((task, index) => (
         <div key={task.id}>
-                      <TaskItem
-              task={task}
-              onUpdate={onUpdateTask}
-              onDelete={onDeleteTask}
-              onEdit={onEditTask}
-            />
+          <TaskItem
+            task={task}
+            onToggleComplete={onToggleComplete}
+            onDelete={onDeleteTask}
+            onEdit={onEditTask}
+          />
         </div>
       ))}
     </div>
