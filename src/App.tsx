@@ -278,12 +278,12 @@ const App: React.FC = () => {
   }, [tasks, currentDate]);
 
   const addTask = async (task: Omit<Task, 'id' | 'createdAt' | 'status'>) => {
-    const now = new Date();
+    const koreaTime = getKoreaTime();
     
     const newTask: Task = {
       ...task,
       id: Date.now().toString(),
-      createdAt: now.toISOString(),
+      createdAt: koreaTime.toISOString(),
       status: 'pending',
     };
     
@@ -299,33 +299,48 @@ const App: React.FC = () => {
   // 반복 태스크 자동 생성 함수 (한국 시간 기준)
   const checkAndCreateRepeatTasks = () => {
     const today = currentDate.getDay(); // 0=일요일, 1=월요일, ..., 6=토요일
+    const todayStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
     
     tasks.forEach(task => {
       if (task.repeatDays && task.repeatDays.length > 0) {
         // 오늘 요일이 반복 요일에 포함되어 있는지 확인
         if (task.repeatDays.includes(today)) {
-          // 오늘 날짜의 00시를 기준으로 태스크가 이미 존재하는지 확인
-          const todayStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-          const todayEnd = new Date(todayStart.getTime() + 24 * 60 * 60 * 1000);
-          
-          const existingTask = tasks.find(t => {
-            if (!t.deadline) return false;
-            const taskDate = new Date(t.deadline);
-            return taskDate >= todayStart && taskDate < todayEnd && 
-                   t.title === task.title && 
-                   t.repeatDays?.join(',') === task.repeatDays?.join(',');
-          });
-          
-          // 오늘 태스크가 없으면 자동 생성
-          if (!existingTask) {
-            const newRepeatTask: Task = {
-              ...task,
-              id: Date.now().toString() + Math.random(),
-              createdAt: currentDate.toISOString(),
-              status: 'pending',
-              deadline: todayStart.toISOString(),
-            };
-            setTasks(prev => [newRepeatTask, ...prev]);
+          // 마감일이 있는지 확인하고, 마감일이 오늘 이후인지 확인
+          if (task.deadline) {
+            const taskDeadline = new Date(task.deadline);
+            const taskDeadlineDate = new Date(taskDeadline.getFullYear(), taskDeadline.getMonth(), taskDeadline.getDate());
+            
+            // 마감일이 오늘 이후라면 반복 생성 가능
+            if (taskDeadlineDate >= todayStart) {
+              // 오늘 날짜에 동일한 반복 테스크가 이미 존재하는지 확인
+              const existingTask = tasks.find(t => {
+                if (!t.deadline) return false;
+                const taskDate = new Date(t.deadline);
+                const taskDateOnly = new Date(taskDate.getFullYear(), taskDate.getMonth(), taskDate.getDate());
+                return taskDateOnly.getTime() === todayStart.getTime() && 
+                       t.title === task.title && 
+                       t.repeatDays?.join(',') === task.repeatDays?.join(',');
+              });
+              
+              // 오늘 테스크가 없으면 자동 생성 (완료된 테스크도 포함하여 생성)
+              if (!existingTask) {
+                const newRepeatTask: Task = {
+                  ...task,
+                  id: Date.now().toString() + Math.random(),
+                  createdAt: getKoreaTime().toISOString(),
+                  status: 'pending', // 항상 pending으로 생성
+                  deadline: todayStart.toISOString(),
+                };
+                
+                console.log(`반복 테스크 생성: ${task.title} (${todayStart.toISOString()})`);
+                setTasks(prev => [newRepeatTask, ...prev]);
+                
+                // 데이터베이스에도 저장
+                taskDB.addTask(newRepeatTask).catch(error => {
+                  console.error('Failed to add repeat task to database:', error);
+                });
+              }
+            }
           }
         }
       }
@@ -337,6 +352,7 @@ const App: React.FC = () => {
     const checkInterval = setInterval(() => {
       const koreaTime = getKoreaTime();
       if (koreaTime.getHours() === 0 && koreaTime.getMinutes() === 0) {
+        console.log('반복 테스크 체크 시작...');
         checkAndCreateRepeatTasks();
       }
     }, 60000); // 1분마다 체크

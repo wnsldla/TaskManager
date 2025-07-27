@@ -105,10 +105,7 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleComplete, onDelete, o
               <div className={`deadline ${deadlinePassed ? 'passed' : ''}`}>
                 <Clock size={16} />
                 <span>
-                  {new Date(task.deadline).toLocaleDateString('ko-KR', { 
-                    month: 'short', 
-                    day: 'numeric' 
-                  })}
+                  {new Date(task.deadline).toLocaleDateString('ko-KR', { timeZone: 'UTC' })}
                 </span>
               </div>
             )}

@@ -52,9 +52,9 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onAddTask, editing
   };
 
   const handleDateSelect = (date: Date) => {
-    const newDeadline = new Date(deadline);
-    newDeadline.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
-    setDeadline(newDeadline);
+    // 선택한 날짜를 그대로 사용 (시간은 00:00:00으로 설정)
+    const selectedDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    setDeadline(selectedDate);
     setIsCalendarOpen(false);
   };
 
@@ -87,7 +87,14 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onAddTask, editing
   }, []);
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      }}
+    >
       <div className="modal-content glass" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>{editingTask ? '태스크 수정' : '새 태스크 추가'}</h2>
@@ -168,7 +175,7 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({ onClose, onAddTask, editing
                 <span>{format(deadline, 'yyyy.MM.dd')}</span>
               </button>
               {isCalendarOpen && (
-                <div ref={calendarRef} className="calendar-container">
+                <div ref={calendarRef} className="calendar-container" onClick={(e) => e.stopPropagation()}>
                   <Calendar selectedDate={deadline} onDateSelect={handleDateSelect} onClose={() => setIsCalendarOpen(false)} />
                 </div>
               )}

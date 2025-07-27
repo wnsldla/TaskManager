@@ -110,11 +110,12 @@
 }
 
 .calendar-container {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  z-index: 10;
-  margin-top: 4px;
+  position: fixed; /* Change to fixed */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center it */
+  z-index: 1050; /* Higher z-index to be above modal content */
+  /* margin-top is removed as it's no longer relevant for fixed positioning */
 }
 
 .form-group input:focus,
