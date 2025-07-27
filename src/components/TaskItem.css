@@ -26,13 +26,13 @@
 .task-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
 }
 
 .task-main {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
   flex: 1;
   cursor: pointer;

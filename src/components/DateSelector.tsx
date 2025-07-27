@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { format, addDays, subDays } from 'date-fns';
-import { ko } from 'date-fns/locale';
+import { addDays, subDays } from 'date-fns';
 import { Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import Calendar from './Calendar';
+import { formatKoreaTimeWithLocale } from '../utils/timezone';
 import './DateSelector.css';
 
 interface DateSelectorProps {
@@ -42,7 +42,7 @@ const DateSelector: React.FC<DateSelectorProps> = ({ selectedDate, onDateChange 
       <div className="date-display-wrapper">
         <button className="date-display-btn glass" onClick={() => setIsCalendarOpen(true)}>
           <CalendarIcon size={20} className="calendar-icon" />
-          <span>{format(selectedDate, 'yy년 M월 d일 (eee)', { locale: ko })}</span>
+          <span>{formatKoreaTimeWithLocale(selectedDate, 'yy년 M월 d일 (eee)')}</span>
         </button>
         {isCalendarOpen && (
           <div ref={calendarRef}>

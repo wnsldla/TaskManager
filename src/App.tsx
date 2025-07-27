@@ -5,6 +5,7 @@ import AddTaskModal from './components/AddTaskModal';
 import DateSelector from './components/DateSelector';
 import { Task } from './types/Task';
 import { taskDB } from './database/supabase';
+import { getKoreaTime, toKoreaTime, formatKoreaTime } from './utils/timezone';
 import './App.css';
 
 const App: React.FC = () => {
@@ -60,8 +61,7 @@ const App: React.FC = () => {
       
       // 실제 시스템 날짜로 복원
       resetToSystemDate: () => {
-        const now = new Date();
-        const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+        const koreaTime = getKoreaTime();
         console.log('시스템 날짜로 복원합니다:', koreaTime.toISOString().split('T')[0]);
         setCurrentDate(koreaTime);
       },
@@ -69,8 +69,7 @@ const App: React.FC = () => {
       // 오늘 날짜로 이동 (한국 시간)
       goToToday: () => {
         console.log('오늘 날짜로 이동합니다 (한국 시간)');
-        const now = new Date();
-        const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+        const koreaTime = getKoreaTime();
         setSelectedDate(koreaTime);
       },
       
@@ -269,8 +268,7 @@ const App: React.FC = () => {
   // 매일 자정에 미완성 테스크 이동 체크 (한국 시간 기준)
   useEffect(() => {
     const checkInterval = setInterval(() => {
-      const now = new Date();
-      const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+      const koreaTime = getKoreaTime();
       if (koreaTime.getHours() === 0 && koreaTime.getMinutes() === 0) {
         moveIncompleteTasksToNextDay();
       }
@@ -281,12 +279,11 @@ const App: React.FC = () => {
 
   const addTask = async (task: Omit<Task, 'id' | 'createdAt' | 'status'>) => {
     const now = new Date();
-    const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
     
     const newTask: Task = {
       ...task,
       id: Date.now().toString(),
-      createdAt: koreaTime.toISOString(),
+      createdAt: now.toISOString(),
       status: 'pending',
     };
     
@@ -338,8 +335,7 @@ const App: React.FC = () => {
   // 매일 자정에 반복 태스크 체크 (한국 시간 기준)
   useEffect(() => {
     const checkInterval = setInterval(() => {
-      const now = new Date();
-      const koreaTime = new Date(now.getTime() + (9 * 60 * 60 * 1000));
+      const koreaTime = getKoreaTime();
       if (koreaTime.getHours() === 0 && koreaTime.getMinutes() === 0) {
         checkAndCreateRepeatTasks();
       }

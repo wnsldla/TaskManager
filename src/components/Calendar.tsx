@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, startOfWeek, endOfWeek, addDays, isSameMonth, isSameDay, getDay } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { formatKoreaTimeWithLocale } from '../utils/timezone';
 import './Calendar.css';
 
 interface CalendarProps {
@@ -19,7 +19,7 @@ const Calendar: React.FC<CalendarProps> = ({ selectedDate, onDateSelect, onClose
         <ChevronLeft size={20} />
       </button>
       <span className="calendar-month-year">
-        {format(currentMonth, 'yyyy년 M월', { locale: ko })}
+        {formatKoreaTimeWithLocale(currentMonth, 'yyyy년 M월')}
       </span>
       <button onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} className="calendar-nav-btn">
         <ChevronRight size={20} />

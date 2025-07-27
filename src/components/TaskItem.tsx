@@ -6,9 +6,8 @@ import {
   Edit,
   Clock
 } from 'lucide-react';
-import { format } from 'date-fns';
-import { ko } from 'date-fns/locale';
 import { Task, TaskPriority } from '../types/Task';
+import { isDeadlinePassed } from '../utils/timezone';
 import './TaskItem.css';
 
 interface TaskItemProps {
@@ -60,11 +59,11 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleComplete, onDelete, o
     return `${selectedDays}마다 반복`;
   };
 
-  const isDeadlinePassed = task.deadline && new Date(task.deadline) < new Date() && task.status === 'pending';
+  const deadlinePassed = task.deadline && isDeadlinePassed(task.deadline) && task.status === 'pending';
 
   return (
     <div 
-      className={`task-item card ${task.status === 'completed' ? 'completed' : ''} ${isDeadlinePassed ? 'deadline-passed' : ''}`}
+      className={`task-item card ${task.status === 'completed' ? 'completed' : ''} ${deadlinePassed ? 'deadline-passed' : ''}`}
     >
       <div className="task-header">
         <div className="task-main">
@@ -103,10 +102,13 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleComplete, onDelete, o
             </div>
             
             {task.deadline && (
-              <div className={`deadline ${isDeadlinePassed ? 'passed' : ''}`}>
+              <div className={`deadline ${deadlinePassed ? 'passed' : ''}`}>
                 <Clock size={16} />
                 <span>
-                  {format(new Date(task.deadline), 'MMM dd', { locale: ko })}
+                  {new Date(task.deadline).toLocaleDateString('ko-KR', { 
+                    month: 'short', 
+                    day: 'numeric' 
+                  })}
                 </span>
               </div>
             )}
@@ -145,9 +147,9 @@ const TaskItem: React.FC<TaskItemProps> = ({ task, onToggleComplete, onDelete, o
             </div>
           )}
           <div className="task-timestamps">
-            <span>생성: {format(new Date(task.createdAt), 'yyyy년 MM월 dd일 HH:mm', { locale: ko })}</span>
+            <span>생성: {new Date(task.createdAt).toLocaleString('ko-KR', { timeZone: 'UTC' })}</span>
             {task.completedAt && (
-              <span>완료: {format(new Date(task.completedAt), 'yyyy년 MM월 dd일 HH:mm', { locale: ko })}</span>
+              <span>완료: {new Date(task.completedAt).toLocaleString('ko-KR', { timeZone: 'UTC' })}</span>
             )}
           </div>
         </div>
